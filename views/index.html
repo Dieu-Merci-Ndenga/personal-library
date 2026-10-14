@@ -1,70 +1,84 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title>Personal Library</title>
-  <link rel="icon" type="image/png" href="https://cdn.freecodecamp.org/universal/favicons/favicon-16x16.png" />
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A quiet space for books worth remembering.">
+  <title>Personal Library</title>
   <link rel="stylesheet" href="/public/style.css">
-  <style>
-    code {
-      background-color: whitesmoke;
-    }
-  </style>
 </head>
 <body>
-<header>
-  <h1>Personal Library</h1>
-</header>
-<br>
-<div id ='sampleposting'>
-  <h2 style="text-align: left">Test API responses</h2>
-  <form action="/api/books" method="post" class="border">
-    <h4>Test post to /api/books</h4>
-    <label for="title" >Book Title</label>
-    <input type="text" id="title" name="title" value=""><br>
-    <input type="submit" value="Submit">
-  </form>
-  <form action="" method="post" id="commentTest" class="border">
-    <h4>Test post to /api/books/{bookid}</h4>
-    <label for="idinputtest">BookId to comment on</label>
-    <input type="text" name="id" value="" id="idinputtest"><br>
-    <label for="comment">Comment</label>
-    <input type="text" id="comment" name="comment" value=""><br>
-    <input type="submit" value="Submit">
-  </form>
-</div>
-<hr style='margin: 50px'>
-<div id='sampleui'>
-  <h2 style="text-align: left">Sample Front-End</h2>
-  <form id="newBookForm" class="border">
-    <label for="bookTitleToAdd">New Book Title</label>
-    <input type="text" id="bookTitleToAdd" name="title" placeholder="Moby Dick" style="width: 295px">
-    <button type="submit" value="Submit" id="newBook">Submit New Book!</button>
-  </form>
-  <div id='display'></div>
-  <div id='bookDetail' class='border'>
-    <p id='detailTitle'>Select a book to see it's details and comments</p>
-    <ol id='detailComments'></ol>
-  </div>
-  <button id='deleteAllBooks'>Delete all books...</button>
-</div>
-<hr style='margin: 50px'>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="/" aria-label="Personal Library home">
+        <span class="brand-mark" aria-hidden="true">PL</span>
+        <span>Personal Library</span>
+      </a>
+      <span class="header-note">Books worth keeping close</span>
+    </div>
+  </header>
 
-<script src="https://code.jquery.com/jquery-2.2.1.min.js"
-        integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
-        crossorigin="anonymous"></script>
-<script src="/public/client.js"></script>
-<script>
-  /*
-  *  For #sampleposting to update form action url to test inputs book id
-  */
-  $(function() {
-    $('#commentTest').submit(function(){
-      let  id = $('#idinputtest').val();
-      $(this).attr('action', "/api/books/" + id);
-    });
-  });
-</script>
+  <main class="shell">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">Your reading room</p>
+      <h1 id="page-title">A shelf for the stories<br><em>that stay with you.</em></h1>
+      <p class="intro-copy">Keep a simple record of the books you have read, want to remember, and want to return to.</p>
+    </section>
+
+    <section class="workspace" aria-label="Library workspace">
+      <div class="library-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Collection</p>
+            <h2>My books</h2>
+          </div>
+          <span class="book-count" id="bookCount">0 books</span>
+        </div>
+        <form id="newBookForm" class="add-form">
+          <label for="bookTitleToAdd">Add a title</label>
+          <div class="form-row">
+            <input type="text" id="bookTitleToAdd" name="title" placeholder="e.g. The Left Hand of Darkness" required>
+            <button type="submit" id="newBook">Add book</button>
+          </div>
+          <p class="form-message" id="libraryMessage" role="status"></p>
+        </form>
+        <div id="display" class="book-list" aria-live="polite"></div>
+        <button class="text-button danger" type="button" id="deleteAllBooks">Clear collection</button>
+      </div>
+
+      <aside id="bookDetail" class="detail-panel" aria-labelledby="detailTitle">
+        <div class="detail-empty" id="detailEmpty">
+          <span class="detail-icon" aria-hidden="true">✦</span>
+          <p class="eyebrow">A closer look</p>
+          <h2>Select a book</h2>
+          <p>Choose a title from your collection to see its notes and add a new thought.</p>
+        </div>
+        <div class="detail-content" id="detailContent" hidden>
+          <p class="eyebrow">Book details</p>
+          <h2 id="detailTitle"></h2>
+          <p class="detail-id" id="detailId"></p>
+          <div class="comments-heading">
+            <h3>Notes</h3>
+            <span id="commentCount">0</span>
+          </div>
+          <ol id="detailComments" class="comments-list"></ol>
+          <form id="newCommentForm" class="comment-form">
+            <label for="commentToAdd">Add a note</label>
+            <div class="form-row">
+              <input type="text" id="commentToAdd" name="comment" placeholder="A thought to remember" required>
+              <button type="submit">Save note</button>
+            </div>
+          </form>
+          <button class="text-button danger" type="button" id="deleteBook">Remove this book</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer shell">
+    <span>Personal Library</span>
+    <span>Made for a life of reading.</span>
+  </footer>
+  <script src="/public/client.js"></script>
 </body>
 </html>

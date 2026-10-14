@@ -1,96 +1,67 @@
-/*
-*
-*
-*       Complete the API routing below
-*       
-*       
-*/
-
 'use strict';
 
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const Book = require('../models/lib');
 
 module.exports = function (app) {
 
-  mongoose.connect(process.env.DB, {useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false, useUnifiedTopology: true})
-  const libraryModel = require('../models/lib')
+  mongoose.connect(process.env.DB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true
+  });
 
   app.route('/api/books')
-    .get(function (req, res){
-      libraryModel.find({}).exec()
-      .then(data => {
-        res.json(data)
-      })
-      .catch(err => res.status(500).send(err.message))
+    .get(function (req, res) {
+      Book.find({}).exec()
+        .then(books => res.json(books))
+        .catch(error => res.status(500).send(error.message));
     })
-    
-    .post(function (req, res){
-      let title = req.body.title;
-      if(!title) return res.send('missing required field title')
 
-      new libraryModel({
-        title: title
-      }).save((err, data) => {
-        if(err) return res.status(500).send(err.message)
-        res.json({_id: data._id, title: data.title})
-      })
+    .post(function (req, res) {
+      const title = req.body.title;
+      if (!title) return res.send('missing required field title');
+
+      Book.create({ title: title })
+        .then(book => res.json({ _id: book._id, title: book.title }))
+        .catch(error => res.status(500).send(error.message));
     })
-    
-    .delete(function(req, res){
-        libraryModel.deleteMany({}).exec()
-        .then(data => {
-          return res.send('complete delete successful')
-        })
-        .catch(err => res.status(500).send(err.message))
+
+    .delete(function (req, res) {
+      Book.deleteMany({}).exec()
+        .then(() => res.send('complete delete successful'))
+        .catch(error => res.status(500).send(error.message));
     });
-
-
 
   app.route('/api/books/:id')
-    .get(function (req, res){
-      let bookid = req.params.id;
-
-      libraryModel.findById(bookid).exec()
-      .then(data => {
-        if(data) return res.json(data)
-        else return res.send('no book exists')
-      })
-      .catch(err => res.status(500).send(err.message))
+    .get(function (req, res) {
+      Book.findById(req.params.id).exec()
+        .then(book => book ? res.json(book) : res.send('no book exists'))
+        .catch(error => res.status(500).send(error.message));
     })
-    
-    .post(function(req, res){
-      let bookid = req.params.id;
-      let comment = req.body.comment;
-      
-      if(!comment)
-        return res.send('missing required field comment')
-      else {
-        libraryModel.findById(bookid).exec()
-        .then(data => {
-          if(data) {
-            data.comments.push(comment)
-            data.commentcount = ++data.commentcount
 
-            data.save((err, info) => {
-              if(err) return res.status(500).send(err.message)
-              return res.json(info)
-            })
+    .post(function (req, res) {
+      const comment = req.body.comment;
+      if (!comment) return res.send('missing required field comment');
+
+      Book.findById(req.params.id).exec()
+        .then(book => {
+          if (!book) {
+            res.send('no book exists');
+            return null;
           }
-          else res.send('no book exists')
+          book.comments.push(comment);
+          book.commentcount += 1;
+          return book.save();
         })
-        .catch(err => res.status(500).send(err.message))
-      }
+        .then(book => book && res.json(book))
+        .catch(error => res.status(500).send(error.message));
     })
-    
-    .delete(function(req, res){
-      let bookid = req.params.id;
-      
-      libraryModel.findByIdAndDelete(bookid).exec()
-        .then(data => {
-          if(data) return res.send('delete successful')
-          else return res.send('no book exists')
-        })
-        .catch(err => res.status(500).send(err.message))
+
+    .delete(function (req, res) {
+      Book.findByIdAndDelete(req.params.id).exec()
+        .then(book => book ? res.send('delete successful') : res.send('no book exists'))
+        .catch(error => res.status(500).send(error.message));
     });
-  
 };
